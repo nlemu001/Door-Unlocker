@@ -50,6 +50,9 @@ unsigned char * unlock_string = "Unlocking door";
 unsigned char * lock_string = "Locking Door";
 unsigned char * change_code_string = "Changing code";
 unsigned char * set_thermo_string = "Setting AC Temp";
+unsigned char * enter_cur_code_string = "Enter current code:";
+unsigned char * enter_new_code_string = "Enter new 4-digit code:";
+unsigned char * invalid_code_string = "Invalid code!";
 
 // Global Variables
 unsigned char choice;
@@ -60,6 +63,7 @@ int one_eighty;
 unsigned char motor_phase;
 unsigned char direction;
 int motor_cnt;
+char code[5] = {'1','2','3','A','#'};
 
 enum keyState {INITK, set_a, set_b, set_c, set_d} key_state;
 
@@ -116,6 +120,57 @@ void Key_Tick()
 
 enum LCD_states {LCDinit, door, ch_code, n_page, set_thermo} lcd_state;
 
+bool verify_code()
+{
+	bool first, sec, third, fourth, fifth = false;
+	char temp = '\0';
+	char temp_code[6] = {' ',' ',' ',' ',' ','\0'};
+	LCD_DisplayString(1, enter_cur_code_string);
+	// Verifying current passcode
+	for(int i = 0; i < 5; i++)
+	{
+		while(true)
+		{
+			temp = GetKeypadKey();
+			delay_ms(300);
+			if(temp != '\0') break;
+		}
+		temp_code[i] = temp;
+
+		LCD_DisplayString(1, temp_code);
+		temp = '\0';
+	}
+	if(!(temp_code[0] == code[0] && temp_code[1] == code[1] && temp_code[2] == code[2] && 
+		temp_code[3] == code[3] && temp_code[4] == code[4]))
+		{
+			LCD_DisplayString(1, invalid_code_string);
+			return false;
+		}
+	
+	return true;
+}
+
+void change_code()
+{
+	char temp = '\0';
+	char n_code[6] = {' ',' ',' ',' ',' ','\0'};	
+	LCD_DisplayString(1, enter_new_code_string);
+	for(int i = 0; i < 5; i++)
+	{
+		while(true)
+		{
+			temp = GetKeypadKey();
+			delay_ms(300);
+			if(temp != '\0') break;
+		}
+		n_code[i] = temp;
+		code[i] = temp;
+		if(temp != '#')
+			LCD_DisplayString(1, n_code);
+		temp = '\0';
+	}
+}
+
 void LCD_tick()
 {
 	// Actions
@@ -125,14 +180,19 @@ void LCD_tick()
 			(page == 1) ? LCD_DisplayString(1, page_one) : LCD_DisplayString(1, page_two);
 			break;
 		case door:
-			(locked) ? LCD_DisplayString(1, unlock_string) : LCD_DisplayString(1, lock_string);
-			motor_engage = true;
-			delay_ms(1500);
+			if(verify_code())
+			{
+				motor_engage = true;
+				(locked) ? LCD_DisplayString(1, unlock_string) : LCD_DisplayString(1, lock_string);
+				delay_ms(1500);
+			}
 			choice = NULL;
 			break;
 		case ch_code:
 			LCD_DisplayString(1, change_code_string);
 			delay_ms(1500);
+			if(verify_code())
+				change_code();
 			choice = NULL;
 			break;
 		case n_page:
@@ -372,7 +432,6 @@ void MotorTask()
 		vTaskDelay(3);
 	}
 }
-	
 
 void key_Init()
 {
@@ -380,7 +439,7 @@ void key_Init()
 	choice = NULL;
 }
 
-void KeyTask()
+void KeyTask() 
 {
 	key_Init();
 	for(;;)

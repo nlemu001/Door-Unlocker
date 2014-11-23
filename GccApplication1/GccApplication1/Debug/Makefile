@@ -38,6 +38,7 @@ SUBDIRS :=
 C_SRCS +=  \
 ../croutine.c \
 ../heap_1.c \
+../helpers.c \
 ../list.c \
 ../main.c \
 ../port.c \
@@ -55,6 +56,7 @@ ASM_SRCS +=
 OBJS +=  \
 croutine.o \
 heap_1.o \
+helpers.o \
 list.o \
 main.o \
 port.o \
@@ -65,6 +67,7 @@ timers.o
 OBJS_AS_ARGS +=  \
 croutine.o \
 heap_1.o \
+helpers.o \
 list.o \
 main.o \
 port.o \
@@ -75,6 +78,7 @@ timers.o
 C_DEPS +=  \
 croutine.d \
 heap_1.d \
+helpers.d \
 list.d \
 main.d \
 port.d \
@@ -85,6 +89,7 @@ timers.d
 C_DEPS_AS_ARGS +=  \
 croutine.d \
 heap_1.d \
+helpers.d \
 list.d \
 main.d \
 port.d \
@@ -103,6 +108,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

@@ -126,6 +126,9 @@
     <Compile Include="heap_1.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="helpers.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="keypad.h">
       <SubType>compile</SubType>
     </Compile>
