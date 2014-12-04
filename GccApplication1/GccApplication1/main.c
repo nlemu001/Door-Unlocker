@@ -8,7 +8,6 @@
 * code, is my own original work.
 */
 
-
 /*
 A  = x01
 AB = x03
@@ -53,6 +52,7 @@ unsigned char * set_thermo_string = "Setting AC Temp";
 unsigned char * enter_cur_code_string = "Enter current code:";
 unsigned char * enter_new_code_string = "Enter new 4-digit code:";
 unsigned char * invalid_code_string = "Invalid code!";
+unsigned char * new_temp_received = "New temp accepted";
 
 // Global Variables
 unsigned char choice;
@@ -64,6 +64,14 @@ unsigned char motor_phase;
 unsigned char direction;
 int motor_cnt;
 char code[5] = {'1','2','3','A','#'};
+int new_temp = 72;
+char buffer[33]  = "  ";
+static unsigned char adc_value = 0;
+
+// Start Analog to digital
+void A2D_init() {
+	ADCSRA |= (1 << ADEN) | (1 << ADSC) | (1 << ADATE);
+}
 
 enum keyState {INITK, set_a, set_b, set_c, set_d} key_state;
 
@@ -171,6 +179,33 @@ void change_code()
 	}
 }
 
+enum JSStates {js_init, js_wait, js_check, js_l, js_r} js_state;
+void change_temp()
+{
+	//js_state = js_wait;
+	while(true)
+	{
+		adc_value = (unsigned char) (ADC>>2);
+		snprintf(buffer, sizeof(buffer), "%d", new_temp);
+		LCD_DisplayString(1, buffer);
+		
+		if(adc_value >= 130)
+		{
+			new_temp = new_temp + 1;
+		}
+		else if(adc_value <= 125)
+			new_temp = new_temp - 1;
+		else
+			continue;
+		delay_ms(500);
+		if((~PINA & 0x80))
+			break;
+	
+	}
+	LCD_DisplayString(1, new_temp_received);
+	delay_ms(1500);
+}
+
 void LCD_tick()
 {
 	// Actions
@@ -183,7 +218,7 @@ void LCD_tick()
 			if(verify_code())
 			{
 				motor_engage = true;
-				(locked) ? LCD_DisplayString(1, unlock_string) : LCD_DisplayString(1, lock_string);
+				(locked) ? LCD_DisplayString(1, lock_string) : LCD_DisplayString(1, unlock_string);
 				delay_ms(1500);
 			}
 			choice = NULL;
@@ -200,6 +235,7 @@ void LCD_tick()
 			choice = NULL;
 			break;
 		case set_thermo:
+			change_temp();
 			LCD_DisplayString(1, set_thermo_string);
 			delay_ms(1500);
 			choice = NULL;
@@ -414,11 +450,51 @@ void Motor_Tick()
 	}
 }
 
+/*
+void Joystick_SM () 
+{
+	switch (js_state) 
+	{
+		case js_l:
+			new_temp = new_temp - 1;
+			break;
+		case js_r:
+			new_temp = new_temp + 1;
+			break;
+		default:
+			break;
+	}
+	
+	switch (js_state) 
+	{
+		case js_init:
+			break;
+		case js_wait:
+			js_state = (adc_value >=125 && adc_value <= 135) ? js_wait : js_check;
+			break;
+		case js_check:
+			js_state = (adc_value >= 132) ? js_r : js_l;
+			break;
+		default:
+			js_state = js_wait;
+			break;
+	}
+}*/
+
+/*void JoystickTask() 
+{
+	js_state = js_init;
+	for ( ; ; ) {
+		Joystick_SM ();
+		vTaskDelay(100);
+	}
+}*/
+
 void motor_Init()
 {
 	motor_state = motor_init;
 	motor_phase = 0x00;
-	one_eighty = 6144;
+	one_eighty = 3072;
 	direction = 0;
 	motor_cnt = 0;
 }
@@ -471,19 +547,21 @@ void LCDTask()
 
 void StartSecPulse(unsigned portBASE_TYPE Priority)
 {
-	xTaskCreate(KeyTask, (signed portCHAR *)"KeyTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
-	xTaskCreate(LCDTask, (signed portCHAR *)"LCDTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
-	xTaskCreate(MotorTask, (signed portCHAR *)"MotorTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
+	xTaskCreate(KeyTask, 		(signed portCHAR *)"KeyTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
+	xTaskCreate(LCDTask, 		(signed portCHAR *)"LCDTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
+	xTaskCreate(MotorTask, 		(signed portCHAR *)"MotorTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
+	//xTaskCreate(JoystickTask, 	(signed portCHAR *)"JoystickTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
 }	
 
 int main(void) 
 {
-	DDRA = 0xFF; PORTA = 0x00;
+	DDRA = 0x7E; PORTA = 0x81; // Enable button on A7
 	DDRB = 0xFF; PORTB = 0x00;
 	DDRC = 0xF0; PORTC = 0x0F;
 	DDRD = 0xFF; PORTD = 0x00;
 
-	//Start Tasks  
+	//Start Tasks
+	A2D_init ();
 	StartSecPulse(1);
 	//RunSchedular 
 	vTaskStartScheduler(); 

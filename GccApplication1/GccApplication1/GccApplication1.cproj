@@ -43,7 +43,7 @@
       <ToolOptions>
         <InterfaceProperties>
           <JtagEnableExtResetOnStartSession>false</JtagEnableExtResetOnStartSession>
-          <IspClock>125010</IspClock>
+          <IspClock>125000</IspClock>
         </InterfaceProperties>
         <InterfaceName>ISP</InterfaceName>
       </ToolOptions>
@@ -96,10 +96,10 @@
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
           <ListValues>
-            <Value>C:\Users\Neri Lemus\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source\include</Value>
-            <Value>C:\Users\Neri Lemus\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source\portable\GCC\ATMega323</Value>
-            <Value>C:\Users\Neri Lemus\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source</Value>
-            <Value>C:\Users\Neri Lemus\Documents\Atmel Studio\6.1\.h Files</Value>
+            <Value>C:\Users\neri\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source\include</Value>
+            <Value>C:\Users\neri\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source\portable\GCC\ATMega323</Value>
+            <Value>C:\Users\neri\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source</Value>
+            <Value>C:\Users\neri\Documents\Atmel Studio\6.1\.h Files</Value>
           </ListValues>
         </avrgcc.compiler.directories.IncludePaths>
         <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
@@ -124,9 +124,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="heap_1.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="helpers.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="keypad.h">
