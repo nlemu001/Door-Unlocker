@@ -3,6 +3,7 @@
 * 
 * Final Project
 * Lab Section 021
+* Code for the Door unlocker Microcontroller
 * 
 * I acknowledge all content contained herein, excluding template or example
 * code, is my own original work.
@@ -40,6 +41,7 @@ DA = x09
 #include "keypad.h"
 #include "bit.h"
 #include "lcd.h"
+#include "usart_ATmega1284.h"
 
 // Menu Strings
 unsigned char * s = "Door Unlocker   Prototype";
@@ -53,81 +55,39 @@ unsigned char * enter_cur_code_string = "Enter current code:";
 unsigned char * enter_new_code_string = "Enter new 4-digit code:";
 unsigned char * invalid_code_string = "Invalid code!";
 unsigned char * new_temp_received = "New temp accepted";
+unsigned char * fan_one = "AC is on.";
+unsigned char * fan_two = "AC is off.";
+unsigned char * fan_three = "Heater is on.";
+unsigned char * fan_four = "Heater is off.";
 
 // Global Variables
-unsigned char choice;
-bool locked;
 char page;
-bool motor_engage;
-int one_eighty;
+
+unsigned char choice;
 unsigned char motor_phase;
 unsigned char direction;
-int motor_cnt;
+unsigned char new_temp = 72;
+unsigned char fan;
+
 char code[5] = {'1','2','3','A','#'};
-int new_temp = 72;
 char buffer[33]  = "  ";
-static unsigned char adc_value = 0;
 
-// Start Analog to digital
-void A2D_init() {
-	ADCSRA |= (1 << ADEN) | (1 << ADSC) | (1 << ADATE);
-}
+int one_eighty;
+int motor_cnt;
 
-enum keyState {INITK, set_a, set_b, set_c, set_d} key_state;
+bool locked;
+bool motor_engage;
+bool setting_temp;
+bool send_byte;
 
-void Key_Tick()
-{
-// Transitions
-	switch(key_state)
-	{
-		case INITK:
-			if(GetKeypadKey() == 'A')
-				key_state = set_a;
-			else if(GetKeypadKey() == 'B')
-				key_state = set_b;
-			else if(GetKeypadKey() == 'C')
-				key_state = set_c;
-			else if(GetKeypadKey() == 'D')
-				key_state = set_d;
-			else
-				key_state = INITK;
-			break;
-		case set_a:
-			key_state = INITK;
-			break;
-		case set_b:
-			key_state = INITK;
-			break;
-		case set_c:
-			key_state = INITK;
-			break;
-		case set_d:
-			key_state = INITK;
-			break;
-	}
-
-// Actions
-	switch(key_state)
-	{
-		case INITK:
-			break;
-		case set_a:
-			choice = 'A';
-			break;
-		case set_b:
-			choice = 'B';
-			break;
-		case set_c:
-			choice = 'C';
-			break;
-		case set_d:
-			choice = 'D';
-			break;
-	}
-}
-
+enum keyState 	{INITK, set_a, set_b, set_c, set_d} key_state;
 enum LCD_states {LCDinit, door, ch_code, n_page, set_thermo} lcd_state;
+enum motorState {motor_init,L0,L1,L2,L3,L4,L5,L6,L7} motor_state;
+enum tempState 	{temp_init, read_btn, temp_increase, temp_decrease} temp_state;
+enum sendState 	{send_init, send} send_state;
+enum receiveState {rec_init, receive} rec_state;
 
+// Helper Methods
 bool verify_code()
 {
 	bool first, sec, third, fourth, fifth = false;
@@ -179,31 +139,56 @@ void change_code()
 	}
 }
 
-enum JSStates {js_init, js_wait, js_check, js_l, js_r} js_state;
-void change_temp()
+// State Machines
+void Key_Tick()
 {
-	//js_state = js_wait;
-	while(true)
+	// Transitions
+	switch(key_state)
 	{
-		adc_value = (unsigned char) (ADC>>2);
-		snprintf(buffer, sizeof(buffer), "%d", new_temp);
-		LCD_DisplayString(1, buffer);
-		
-		if(adc_value >= 130)
-		{
-			new_temp = new_temp + 1;
-		}
-		else if(adc_value <= 125)
-			new_temp = new_temp - 1;
-		else
-			continue;
-		delay_ms(500);
-		if((~PINA & 0x80))
+		case INITK:
+			if(GetKeypadKey() == 'A')
+				key_state = set_a;
+			else if(GetKeypadKey() == 'B')
+				key_state = set_b;
+			else if(GetKeypadKey() == 'C')
+				key_state = set_c;
+			else if(GetKeypadKey() == 'D')
+				key_state = set_d;
+			else
+				key_state = INITK;
 			break;
-	
+		case set_a:
+			key_state = INITK;
+			break;
+		case set_b:
+			key_state = INITK;
+			break;
+		case set_c:
+			key_state = INITK;
+			break;
+		case set_d:
+			key_state = INITK;
+			break;
 	}
-	LCD_DisplayString(1, new_temp_received);
-	delay_ms(1500);
+
+	// Actions
+	switch(key_state)
+	{
+		case INITK:
+			break;
+		case set_a:
+			choice = 'A';
+			break;
+		case set_b:
+			choice = 'B';
+			break;
+		case set_c:
+			choice = 'C';
+			break;
+		case set_d:
+			choice = 'D';
+			break;
+	}
 }
 
 void LCD_tick()
@@ -212,7 +197,18 @@ void LCD_tick()
 	switch(lcd_state)
 	{
 		case LCDinit:
-			(page == 1) ? LCD_DisplayString(1, page_one) : LCD_DisplayString(1, page_two);
+			//(page == 1) ? LCD_DisplayString(1, page_one) : LCD_DisplayString(1, page_two);
+			if(fan == 1) {LCD_DisplayString(1, fan_one); delay_ms(1500);}
+			else if(fan == 2) {LCD_DisplayString(1, fan_two); delay_ms(1500);}
+			else if(fan == 3) {LCD_DisplayString(1, fan_three); delay_ms(1500);}
+			else if(fan == 4) {LCD_DisplayString(1, fan_four); delay_ms(1500);}
+			else if(page == 1)
+				LCD_DisplayString(1, page_one);
+			else if(page == 2)
+				LCD_DisplayString(1, page_two);
+			else 
+				break;
+			fan = 0;
 			break;
 		case door:
 			if(verify_code())
@@ -235,10 +231,6 @@ void LCD_tick()
 			choice = NULL;
 			break;
 		case set_thermo:
-			change_temp();
-			LCD_DisplayString(1, set_thermo_string);
-			delay_ms(1500);
-			choice = NULL;
 			break;
 	}
 	
@@ -255,7 +247,12 @@ void LCD_tick()
 			else if(choice == 'C')
 				lcd_state = n_page;
 			else if(choice == 'D')
+			{
+				LCD_DisplayString(1, set_thermo_string);
+				delay_ms(1500);
 				lcd_state = set_thermo;
+				setting_temp = true;
+			}
 			else
 				break;
 			break;
@@ -269,12 +266,15 @@ void LCD_tick()
 			lcd_state = LCDinit;
 			break;
 		case set_thermo:
-			lcd_state = LCDinit;
+			if(!setting_temp)
+			{
+				lcd_state = LCDinit;				
+				choice = NULL;
+				send_byte = true;
+			}
 			break;
 	}
 }
-
-enum motorState {motor_init,L0,L1,L2,L3,L4,L5,L6,L7} motor_state;
 
 void Motor_Tick()
 {
@@ -450,45 +450,134 @@ void Motor_Tick()
 	}
 }
 
-/*
-void Joystick_SM () 
+void temp_tick()
 {
-	switch (js_state) 
+	// Transitions
+	switch(temp_state)
 	{
-		case js_l:
-			new_temp = new_temp - 1;
+		case temp_init:
+			if(setting_temp)
+				temp_state = read_btn;
 			break;
-		case js_r:
-			new_temp = new_temp + 1;
+		case read_btn:
+			if(~PINA & 0x01)
+				temp_state = temp_increase;
+			else if(~PINA & 0x02)
+				temp_state = temp_decrease;
+			else if(GetKeypadKey() == '#')
+			{
+				LCD_DisplayString(1, new_temp_received);
+				temp_state = temp_init;
+			}
+			else
+				break;
+			break;
+		case temp_increase:
+			temp_state = read_btn;
+			break;
+		case temp_decrease:
+			temp_state = read_btn;
+			break;
+		default:
+			break;
+	}
+
+	// State Actions
+	switch(temp_state)
+	{
+		case temp_init:
+			setting_temp = false;
+			break;
+		case read_btn:
+			snprintf(buffer, sizeof(buffer), "%d", new_temp);
+			LCD_DisplayString(1, buffer);
+			break;
+		case temp_increase:
+			new_temp += 1;
+			break;
+		case temp_decrease:
+			new_temp -= 1;
+			break;
+		default:
+			break;
+	}
+}
+
+void send_tick ()
+{
+	// Actions
+	switch(send_state)
+	{
+		case send_init:
+			break;
+		case send:
+			USART_Send(new_temp, 0);
+			break;
+		default:
+			break;
+	}
+
+	// Transitions
+	switch(send_state)
+	{
+		case send_init:
+			if (USART_IsSendReady(0) && send_byte)
+				send_state = send;
+			else 
+				send_state = send_init;
+			break;
+		case send:
+			while(!USART_HasTransmitted(0)){}
+			send_state = send_init;
+			send_byte = false;
+			break;
+		default:
+			break;
+	}
+}
+
+void receive_SM()
+{
+	// SM Transitions
+	switch(rec_state)
+	{
+		case rec_init:
+			if (USART_HasReceived(0)) {rec_state = receive;}
+			else rec_state = rec_init;
+			break;
+		case receive:
+			rec_state = rec_init;
 			break;
 		default:
 			break;
 	}
 	
-	switch (js_state) 
+	// SM Actions
+	switch(rec_state)
 	{
-		case js_init:
+		case rec_init:
 			break;
-		case js_wait:
-			js_state = (adc_value >=125 && adc_value <= 135) ? js_wait : js_check;
-			break;
-		case js_check:
-			js_state = (adc_value >= 132) ? js_r : js_l;
+		case receive:
+			fan = USART_Receive(0);
+			//if(fan == 1) {LCD_DisplayString(1, fan_one); delay_ms(1500);}
+			//else if(fan == 2) {LCD_DisplayString(1, fan_two); delay_ms(1500);}
+			///else if(fan == 3) {LCD_DisplayString(1, fan_three); delay_ms(1500);}
+			//else if(fan == 4) {LCD_DisplayString(1, fan_four); delay_ms(1500);}
+			//else
+			//	break;
+			//fan = 0;
 			break;
 		default:
-			js_state = js_wait;
 			break;
 	}
-}*/
+}
 
-/*void JoystickTask() 
+// Task inits
+void key_Init()
 {
-	js_state = js_init;
-	for ( ; ; ) {
-		Joystick_SM ();
-		vTaskDelay(100);
-	}
-}*/
+	key_state = INITK;
+	choice = NULL;
+}
 
 void motor_Init()
 {
@@ -499,6 +588,20 @@ void motor_Init()
 	motor_cnt = 0;
 }
 
+void LCD_task_init()
+{
+	locked = true;
+	page = 1;
+	lcd_state = LCDinit;
+}
+
+void temp_Init()
+{
+	temp_state = temp_init;
+	setting_temp = false;
+}
+
+// Tasks
 void MotorTask()
 {
 	motor_Init();
@@ -509,12 +612,6 @@ void MotorTask()
 	}
 }
 
-void key_Init()
-{
-	key_state = INITK;
-	choice = NULL;
-}
-
 void KeyTask() 
 {
 	key_Init();
@@ -523,13 +620,6 @@ void KeyTask()
 		Key_Tick();
 		vTaskDelay(100);
 	}
-}
-
-void LCD_task_init()
-{
-	locked = true;
-	page = 1;
-	lcd_state = LCDinit;
 }
 
 void LCDTask()
@@ -545,23 +635,59 @@ void LCDTask()
 	}
 }
 
+void TempTask()
+{
+	temp_Init();
+	for(;;)
+	{
+		temp_tick();
+		vTaskDelay(300);
+	}
+}
+
+void SendTask() 
+{
+	send_state = send_init;
+	send_byte = false;
+	initUSART(0);
+	for ( ; ; ) 
+	{
+		send_tick();
+		vTaskDelay(300);
+	}
+}
+
+void RecTask() 
+{
+	rec_state = rec_init;
+	fan = 0;
+	initUSART(0);
+	for (;;) 
+	{
+		receive_SM();
+		vTaskDelay(100);
+	}
+}
+
+// RTOS Start
 void StartSecPulse(unsigned portBASE_TYPE Priority)
 {
 	xTaskCreate(KeyTask, 		(signed portCHAR *)"KeyTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
 	xTaskCreate(LCDTask, 		(signed portCHAR *)"LCDTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
 	xTaskCreate(MotorTask, 		(signed portCHAR *)"MotorTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
-	//xTaskCreate(JoystickTask, 	(signed portCHAR *)"JoystickTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
+	xTaskCreate(TempTask,	 	(signed portCHAR *)"TempTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL );
+	xTaskCreate(SendTask, 		(signed portCHAR *)"SendTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL);
+	xTaskCreate(RecTask, 		(signed portCHAR *)"RecTask", configMINIMAL_STACK_SIZE, NULL, Priority, NULL);
 }	
 
 int main(void) 
 {
-	DDRA = 0x7E; PORTA = 0x81; // Enable button on A7
+	DDRA = 0xFC; PORTA = 0x03; // Enable button on A7, A6
 	DDRB = 0xFF; PORTB = 0x00;
 	DDRC = 0xF0; PORTC = 0x0F;
 	DDRD = 0xFF; PORTD = 0x00;
 
 	//Start Tasks
-	A2D_init ();
 	StartSecPulse(1);
 	//RunSchedular 
 	vTaskStartScheduler(); 

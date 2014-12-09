@@ -38,7 +38,6 @@ SUBDIRS :=
 C_SRCS +=  \
 ../croutine.c \
 ../heap_1.c \
-../helpers.c \
 ../list.c \
 ../main.c \
 ../port.c \
@@ -56,7 +55,6 @@ ASM_SRCS +=
 OBJS +=  \
 croutine.o \
 heap_1.o \
-helpers.o \
 list.o \
 main.o \
 port.o \
@@ -67,7 +65,6 @@ timers.o
 OBJS_AS_ARGS +=  \
 croutine.o \
 heap_1.o \
-helpers.o \
 list.o \
 main.o \
 port.o \
@@ -78,7 +75,6 @@ timers.o
 C_DEPS +=  \
 croutine.d \
 heap_1.d \
-helpers.d \
 list.d \
 main.d \
 port.d \
@@ -89,7 +85,6 @@ timers.d
 C_DEPS_AS_ARGS +=  \
 croutine.d \
 heap_1.d \
-helpers.d \
 list.d \
 main.d \
 port.d \
@@ -125,12 +120,10 @@ LIB_DEP+=
 
 
 
-
-
 ./%.o: .././%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 3.4.2
-	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Users\Neri Lemus\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source\include" -I"C:\Users\Neri Lemus\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source\portable\GCC\ATMega323" -I"C:\Users\Neri Lemus\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source" -I"C:\Users\Neri Lemus\Documents\Atmel Studio\6.1\.h Files"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega1284 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<"
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Users\neri\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source\include" -I"C:\Users\neri\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source\portable\GCC\ATMega323" -I"C:\Users\neri\Documents\Atmel Studio\6.1\FreeRTOS_Lab\FreeRTOS\Source" -I"C:\Users\neri\Documents\Atmel Studio\6.1\.h Files"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega1284 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<"
 	@echo Finished building: $<
 	
 

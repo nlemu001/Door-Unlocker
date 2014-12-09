@@ -6,8 +6,6 @@ croutine.c
 
 heap_1.c
 
-helpers.c
-
 list.c
 
 main.c
