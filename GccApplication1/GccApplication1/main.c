@@ -398,6 +398,7 @@ void Motor_Tick()
 	{
 		case motor_init:
 			motor_cnt = 0;
+			//PORTA = PORTA & 0x03;
 			break;
 		case L0:
 			motor_phase = 0x04;
@@ -460,9 +461,9 @@ void temp_tick()
 				temp_state = read_btn;
 			break;
 		case read_btn:
-			if(~PINA & 0x01)
+			if(~PIND & 0x40)
 				temp_state = temp_increase;
-			else if(~PINA & 0x02)
+			else if(~PIND & 0x20)
 				temp_state = temp_decrease;
 			else if(GetKeypadKey() == '#')
 			{
@@ -682,10 +683,10 @@ void StartSecPulse(unsigned portBASE_TYPE Priority)
 
 int main(void) 
 {
-	DDRA = 0xFC; PORTA = 0x03; // Enable button on A7, A6
+	DDRA = 0xFF; PORTA = 0x00; // Enable button on A7, A6
 	DDRB = 0xFF; PORTB = 0x00;
 	DDRC = 0xF0; PORTC = 0x0F;
-	DDRD = 0xFF; PORTD = 0x00;
+	DDRD = 0x0F; PORTD = 0xF0;
 
 	//Start Tasks
 	StartSecPulse(1);

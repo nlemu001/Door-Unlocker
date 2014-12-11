@@ -346,7 +346,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x1f4a
+.text           0x00000000     0x1f46
  *(.vectors)
  .vectors       0x00000000       0x8c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284.o
                 0x00000000                __vector_default
@@ -559,77 +559,77 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .text.StartSecPulse
                 0x00000ec6       0x9c main.o
                 0x00000ec6                StartSecPulse
- .text.main     0x00000f62       0x26 main.o
+ .text.main     0x00000f62       0x22 main.o
                 0x00000f62                main
  .text.pxPortInitialiseStack
-                0x00000f88      0x128 port.o
-                0x00000f88                pxPortInitialiseStack
+                0x00000f84      0x128 port.o
+                0x00000f84                pxPortInitialiseStack
  .text.xPortStartScheduler
-                0x000010b0       0x74 port.o
-                0x000010b0                xPortStartScheduler
+                0x000010ac       0x74 port.o
+                0x000010ac                xPortStartScheduler
  .text.vPortYield
-                0x00001124       0xb0 port.o
-                0x00001124                vPortYield
+                0x00001120       0xb0 port.o
+                0x00001120                vPortYield
  .text.vPortYieldFromTick
-                0x000011d4       0xb2 port.o
-                0x000011d4                vPortYieldFromTick
+                0x000011d0       0xb2 port.o
+                0x000011d0                vPortYieldFromTick
  .text.__vector_13
-                0x00001286        0x4 port.o
-                0x00001286                __vector_13
+                0x00001282        0x4 port.o
+                0x00001282                __vector_13
  .text.prvAddCurrentTaskToDelayedList
-                0x0000128a       0x6e tasks.o
+                0x00001286       0x6e tasks.o
  .text.xTaskGenericCreate
-                0x000012f8      0x210 tasks.o
-                0x000012f8                xTaskGenericCreate
+                0x000012f4      0x210 tasks.o
+                0x000012f4                xTaskGenericCreate
  .text.vTaskStartScheduler
-                0x00001508       0x52 tasks.o
-                0x00001508                vTaskStartScheduler
+                0x00001504       0x52 tasks.o
+                0x00001504                vTaskStartScheduler
  .text.vTaskSuspendAll
-                0x0000155a        0xc tasks.o
-                0x0000155a                vTaskSuspendAll
+                0x00001556        0xc tasks.o
+                0x00001556                vTaskSuspendAll
  .text.vTaskIncrementTick
-                0x00001566      0x188 tasks.o
-                0x00001566                vTaskIncrementTick
+                0x00001562      0x188 tasks.o
+                0x00001562                vTaskIncrementTick
  .text.xTaskResumeAll
-                0x000016ee      0x118 tasks.o
-                0x000016ee                xTaskResumeAll
+                0x000016ea      0x118 tasks.o
+                0x000016ea                xTaskResumeAll
  .text.prvIdleTask
-                0x00001806       0x7a tasks.o
+                0x00001802       0x7a tasks.o
  .text.vTaskDelay
-                0x00001880       0x38 tasks.o
-                0x00001880                vTaskDelay
+                0x0000187c       0x38 tasks.o
+                0x0000187c                vTaskDelay
  .text.vTaskSwitchContext
-                0x000018b8       0xba tasks.o
-                0x000018b8                vTaskSwitchContext
+                0x000018b4       0xba tasks.o
+                0x000018b4                vTaskSwitchContext
  .text.avr-libc
-                0x00001972        0xe c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(memset.o)
-                0x00001972                memset
+                0x0000196e        0xe c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(memset.o)
+                0x0000196e                memset
  .text.avr-libc
-                0x00001980       0x1e c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(strncpy.o)
-                0x00001980                strncpy
+                0x0000197c       0x1e c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(strncpy.o)
+                0x0000197c                strncpy
  .text.avr-libc
-                0x0000199e       0x78 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(snprintf.o)
-                0x0000199e                snprintf
+                0x0000199a       0x78 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(snprintf.o)
+                0x0000199a                snprintf
  .text.avr-libc
-                0x00001a16      0x3f0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(vfprintf_std.o)
-                0x00001a16                vfprintf
+                0x00001a12      0x3f0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(vfprintf_std.o)
+                0x00001a12                vfprintf
  .text.avr-libc
-                0x00001e06       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(strnlen_P.o)
-                0x00001e06                strnlen_P
+                0x00001e02       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(strnlen_P.o)
+                0x00001e02                strnlen_P
  .text.avr-libc
-                0x00001e1c       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(strnlen.o)
-                0x00001e1c                strnlen
+                0x00001e18       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(strnlen.o)
+                0x00001e18                strnlen
  .text.avr-libc
-                0x00001e32       0x58 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(fputc.o)
-                0x00001e32                fputc
+                0x00001e2e       0x58 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(fputc.o)
+                0x00001e2e                fputc
  .text.avr-libc
-                0x00001e8a       0xbc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(ultoa_invert.o)
-                0x00001e8a                __ultoa_invert
-                0x00001f46                . = ALIGN (0x2)
+                0x00001e86       0xbc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(ultoa_invert.o)
+                0x00001e86                __ultoa_invert
+                0x00001f42                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00001f46        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
-                0x00001f46                _exit
-                0x00001f46                exit
+ .fini9         0x00001f42        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+                0x00001f42                _exit
+                0x00001f42                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -648,11 +648,11 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00001f46        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+ .fini0         0x00001f42        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
  *(.fini0)
-                0x00001f4a                _etext = .
+                0x00001f46                _etext = .
 
-.data           0x00800100      0x198 load address 0x00001f4a
+.data           0x00800100      0x198 load address 0x00001f46
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284.o
@@ -807,8 +807,8 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
                 0x008008e1                motor_engage
                 0x008008e2                key_state
                 0x008008e3                PROVIDE (__bss_end, .)
-                0x00001f4a                __data_load_start = LOADADDR (.data)
-                0x000020e2                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00001f46                __data_load_start = LOADADDR (.data)
+                0x000020de                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x008008e3        0x0
                 0x008008e3                PROVIDE (__noinit_start, .)

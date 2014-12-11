@@ -92,7 +92,7 @@ void transmit_data(volatile uint8_t *port, unsigned char data, unsigned char reg
 		// Sets SRCLR to 1 allowing data to be set
 		// Also clears SRCLK in preparation of sending data
 		if(reg == 1){*port = 0x08;}
-		else{*port = 0x20;}
+		else {*port = 0x20;}
 		// set SER = next bit of data to be sent.
 		*port |= ((data >> i) & 0x01);
 		// set SRCLK = 1. Rising edge shifts next bit of data into the shift register
@@ -100,7 +100,7 @@ void transmit_data(volatile uint8_t *port, unsigned char data, unsigned char reg
 	}
 	// set RCLK = 1. Rising edge copies data from the ?Shift? register to the ?Storage? register
 	if(reg == 1){*port |= 0x02;}
-	else{*port |= 0x10;}
+	else {*port |= 0x10;}
 	// clears all lines in preparation of a new transmission
 	*port = 0x00;
 }
@@ -231,11 +231,13 @@ void fan_SM()
 		case fan_init:
 			cnt = 0;
 			fan = 0;
+
 			break;
 		case AC_message:
 			fan = 1;
 			send_byte = true;
 			PORTA = PORTA | 0x04;
+			transmit_data(&PORTC, 0x0E, 2);
 			break;
 		case cool_room:
 			if(cnt == 20)
@@ -248,6 +250,7 @@ void fan_SM()
 			fan = 3;
 			send_byte = true;
 			PORTA = PORTA | 0x08;
+			transmit_data(&PORTC, 0x36, 2);
 			break;
 		case heat_room:
 			if(cnt == 20)
@@ -283,6 +286,7 @@ void fan_SM()
 				send_byte = true;
 				fan_state = fan_init;
 				PORTA = PORTA & 0x03;
+				transmit_data(&PORTC, 0x06, 2);
 			}
 			break;
 		case Heat_message:
@@ -297,6 +301,7 @@ void fan_SM()
 				send_byte = true;
 				fan_state = fan_init;
 				PORTA = PORTA & 0x03;
+				transmit_data(&PORTC, 0x06, 2);
 			}
 			break;
 		default:
@@ -331,6 +336,7 @@ void TempTask()
 	{
 		temp_SM();
 		transmit_data(&PORTC, curr_temp, 1);
+		//transmit_data(&PORTC, 0x06, 2);
 		vTaskDelay(250);
 	}
 }
